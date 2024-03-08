@@ -23,26 +23,22 @@ public class UserController {
 
 
     @GetMapping("")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<User> getAllUsers(){
         return this.userService.getUsers();
     }
 
     @GetMapping("/{userId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public User findById(@PathVariable UUID userId){
         return userService.findById(userId);
     }
 
     @PutMapping("/{userId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public User findAndUpdate(@PathVariable UUID userId, @RequestBody UserDTO body){
         return userService.findByIdAndUpdate(userId,body);
     }
 
     @DeleteMapping("/{userId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void findAndDelete(@PathVariable UUID userId){
         userService.findByIdAndDelete(userId);
