@@ -3,6 +3,11 @@ package palmfit.PalmFit.services;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import palmfit.PalmFit.entities.User;
@@ -18,20 +23,22 @@ import java.util.UUID;
 public class UserService {
     @Autowired
     private UserDAO userDAO;
-
     @Autowired
     Cloudinary cloudinaryUploader;
-
-
+    private MembershipService membershipService;
+    public UserService(@Lazy MembershipService membershipService){
+        this.membershipService = membershipService;
+    }
     public User findById(UUID id) {
         return userDAO.findById(id).orElseThrow(() -> new NotFoundException(id));
     }
     public User findByEmail(String email){
         return userDAO.findByEmail(email).orElseThrow( () -> new NotFoundException("Email " + email + " not found!"));
     }
-
-    public List<User> getUsers(){
-        return userDAO.findAll();
+    public Page<User> getUsers(int page, int size, String orderBy){
+        if(size >= 100) size = 100;
+        Pageable pageable = PageRequest.of(page,size, Sort.by(orderBy));
+        return userDAO.findAll(pageable);
     }
 
     public List<User> getUsersById(List<UUID> usersIds){
@@ -49,8 +56,6 @@ public class UserService {
         found.setLastname(body.lastname());
         found.setAge(body.age());
         found.setEmail(body.email());
-        found.setPassword(body.password());
-        found.setAvatar(body.avatar());
         found.setRole(body.role());
         return userDAO.save(found);
     }
