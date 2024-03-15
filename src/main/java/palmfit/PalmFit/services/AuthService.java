@@ -45,8 +45,7 @@ public class AuthService {
         User user = userService.findByEmail(payload.email());
         if (bcrypt.matches(payload.password(), user.getPassword())) {
             String token = jwtTools.createToken(user);
-            Role role = user.getRole();
-            return new LoginResponseDTO(token, role);
+            return new LoginResponseDTO(token);
         } else {
             throw new UnauthorizedException("Credenziali sbagliate!");
         }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import palmfit.PalmFit.entities.User;
 import palmfit.PalmFit.exceptions.BadRequestException;
+import palmfit.PalmFit.payloads.exceptions.ProfileDTO;
 import palmfit.PalmFit.payloads.exceptions.UserDTO;
 import palmfit.PalmFit.payloads.exceptions.UserResponseDTO;
 import palmfit.PalmFit.services.AuthService;
@@ -71,8 +72,8 @@ public class UserController {
 
 //PROFILE
     @GetMapping("/me")
-    public User getProfile(@AuthenticationPrincipal User currentUser){
-        return currentUser;
+    public ProfileDTO getProfile(@AuthenticationPrincipal User currentUser){
+        return userService.getProfile(currentUser);
     }
 
     @PutMapping("/me")

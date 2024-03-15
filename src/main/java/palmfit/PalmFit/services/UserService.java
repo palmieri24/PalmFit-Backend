@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import palmfit.PalmFit.entities.User;
 import palmfit.PalmFit.exceptions.NotFoundException;
+import palmfit.PalmFit.payloads.exceptions.ProfileDTO;
 import palmfit.PalmFit.payloads.exceptions.UserDTO;
 import palmfit.PalmFit.repositories.UserDAO;
 
@@ -48,6 +49,11 @@ public class UserService {
     public void findByIdAndDelete(UUID id){
         User found = this.findById(id);
         userDAO.delete(found);
+    }
+
+    public ProfileDTO getProfile(User user){
+        ProfileDTO profileDTO = new ProfileDTO(user.getName(), user.getLastname(), user.getAge(), user.getEmail(), user.getAvatar());
+        return profileDTO;
     }
 
     public User findByIdAndUpdate(UUID id, UserDTO body){
