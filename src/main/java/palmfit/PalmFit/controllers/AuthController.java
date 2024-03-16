@@ -22,7 +22,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public LoginResponseDTO login(@RequestBody UserLoginDTO body){
-        return new LoginResponseDTO(authService.authenticateUserAndGenerateToken(body));
+        return authService.authenticateUserAndGenerateToken(body);
     }
 
     @PostMapping("/register")
@@ -30,8 +30,6 @@ public class AuthController {
     public User saveUser(@RequestBody UserDTO body){
         return this.authService.save(body);
     }
-
-
 
 }
 
