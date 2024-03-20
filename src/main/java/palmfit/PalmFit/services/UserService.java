@@ -56,16 +56,6 @@ public class UserService {
         return profileDTO;
     }
 
-    public User findByIdAndUpdate(UUID id, UserDTO body){
-        User found = this.findById(id);
-        found.setName(body.name());
-        found.setLastname(body.lastname());
-        found.setAge(body.age());
-        found.setEmail(body.email());
-        found.setRole(body.role());
-        return userDAO.save(found);
-    }
-
     public String uploadImg(MultipartFile img, UUID id) throws IOException {
         User found = findById(id);
         String url = (String) cloudinaryUploader.uploader().upload(img.getBytes(), ObjectUtils.emptyMap()).get("url");

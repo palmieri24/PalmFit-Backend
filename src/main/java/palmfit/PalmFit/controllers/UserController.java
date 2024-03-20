@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import palmfit.PalmFit.exceptions.BadRequestException;
 import palmfit.PalmFit.payloads.exceptions.ProfileDTO;
 import palmfit.PalmFit.payloads.exceptions.UserDTO;
 import palmfit.PalmFit.payloads.exceptions.UserResponseDTO;
+import palmfit.PalmFit.payloads.exceptions.UserUpdateInfoDTO;
 import palmfit.PalmFit.services.AuthService;
 import palmfit.PalmFit.services.UserService;
 
@@ -57,8 +59,8 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public User findAndUpdate(@PathVariable UUID userId, @RequestBody UserDTO body){
-        return userService.findByIdAndUpdate(userId,body);
+    public User findAndUpdate(@PathVariable UUID userId, @RequestBody UserUpdateInfoDTO body){
+        return authService.update(userId,body);
     }
 
     @DeleteMapping("/{userId}")
@@ -74,9 +76,9 @@ public class UserController {
         return userService.getProfile(currentUser);
     }
 
-    @PutMapping("/me")
-    public User getMeAndUpdate(@AuthenticationPrincipal User currentUser, @RequestBody UserDTO updatedUser){
-        return this.userService.findByIdAndUpdate(currentUser.getId(), updatedUser);
+    @PutMapping("/updateMe")
+    public User updateProfile(@AuthenticationPrincipal User currentUser, @RequestBody UserUpdateInfoDTO updatedUser){
+        return this.authService.update(currentUser.getId(), updatedUser);
     }
 
     @DeleteMapping("/me")

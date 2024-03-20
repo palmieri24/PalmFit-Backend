@@ -10,8 +10,11 @@ import palmfit.PalmFit.exceptions.UnauthorizedException;
 import palmfit.PalmFit.payloads.exceptions.LoginResponseDTO;
 import palmfit.PalmFit.payloads.exceptions.UserDTO;
 import palmfit.PalmFit.payloads.exceptions.UserLoginDTO;
+import palmfit.PalmFit.payloads.exceptions.UserUpdateInfoDTO;
 import palmfit.PalmFit.repositories.UserDAO;
 import palmfit.PalmFit.security.JWTTools;
+
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -49,6 +52,21 @@ public class AuthService {
         } else {
             throw new UnauthorizedException("Credenziali sbagliate!");
         }
+    }
+
+    public User update(UUID id, UserUpdateInfoDTO body){
+        User found = userService.findById(id);
+        if (body.name() != null) {
+            found.setName(body.name());
+        }
+        if (body.lastname() != null) {
+            found.setLastname(body.lastname());
+        }
+       found.setAge(body.age());
+        if (body.email() != null){
+            found.setEmail(body.email());
+        }
+        return userDAO.save(found);
     }
 
 }
