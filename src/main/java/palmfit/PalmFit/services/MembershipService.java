@@ -47,7 +47,6 @@ public class MembershipService {
         membershipDAO.delete(found);
     }
 
-    @Transactional
     public Membership save(MembershipDTO body){
         Membership membership = new Membership();
         membership.setMembershipType(body.membershipType());
