@@ -62,7 +62,6 @@ public class UserService {
         found.setLastname(body.lastname());
         found.setAge(body.age());
         found.setEmail(body.email());
-        found.setRole(body.role());
         return userDAO.save(found);
     }
 

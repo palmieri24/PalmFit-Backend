@@ -35,13 +35,12 @@ public class MembershipController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public MembershipResponseDTO save(@RequestBody @Validated MembershipDTO body, BindingResult validation){
+  public Membership save(@RequestBody @Validated MembershipDTO body, BindingResult validation){
     if(validation.hasErrors()){
       System.out.println(validation.getAllErrors());
       throw new BadRequestException("Payload Error!");
   } else {
-      Membership membership = membershipService.save(body);
-      return new MembershipResponseDTO(membership.getId());
+      return membershipService.save(body);
     }
 }
   @PutMapping("/{id}")

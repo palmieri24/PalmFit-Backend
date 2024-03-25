@@ -76,7 +76,7 @@ public class UserController {
         return userService.getProfile(currentUser);
     }
 
-    @PutMapping("/me")
+    @PutMapping("/updateMe")
     public User getMeAndUpdate(@AuthenticationPrincipal User currentUser, @RequestBody UserDTO updatedUser){
         return this.userService.findByIdAndUpdate(currentUser.getId(), updatedUser);
     }
@@ -87,7 +87,7 @@ public class UserController {
         this.userService.findByIdAndDelete(currentUser.getId());
     }
 
-    @PostMapping("/{id}/upload")
+    @PostMapping("/uploadAvatar")
     public String uploadAvatar(@PathVariable UUID id, @RequestParam("avatar") MultipartFile img) throws IOException {
         return this.userService.uploadImg(img, id);
     }

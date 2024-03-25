@@ -47,7 +47,6 @@ public class MembershipService {
         membershipDAO.delete(found);
     }
 
-    @Transactional
     public Membership save(MembershipDTO body){
         Membership membership = new Membership();
         membership.setMembershipType(body.membershipType());
@@ -75,7 +74,6 @@ public class MembershipService {
             case ANNUAL -> 360;
         };
     }
-
     public Membership findByIdAndUpdate(UUID id, MembershipDTO body){
         Membership found = this.findById(id);
         found.setMembershipType(body.membershipType());
