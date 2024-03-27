@@ -26,10 +26,6 @@ public class UserService {
     private UserDAO userDAO;
     @Autowired
     Cloudinary cloudinaryUploader;
-    private MembershipService membershipService;
-    public UserService(@Lazy MembershipService membershipService){
-        this.membershipService = membershipService;
-    }
     public User findById(UUID id) {
         return userDAO.findById(id).orElseThrow(() -> new NotFoundException(id));
     }
@@ -52,7 +48,7 @@ public class UserService {
     }
 
     public ProfileDTO getProfile(User user){
-        ProfileDTO profileDTO = new ProfileDTO(user.getName(), user.getLastname(), user.getAge(), user.getEmail(), user.getAvatar());
+        ProfileDTO profileDTO = new ProfileDTO(user.getName(), user.getLastname(), user.getAge(), user.getEmail(), user.getAvatar(), user.getMembership());
         return profileDTO;
     }
 

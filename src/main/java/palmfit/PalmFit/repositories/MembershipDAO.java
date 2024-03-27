@@ -14,8 +14,4 @@ import java.util.UUID;
 
 @Repository
 public interface MembershipDAO extends JpaRepository<Membership, UUID> {
-    @Query("SELECT m FROM Membership m WHERE m.user.id = :user_id AND m.membershipType = :membershipType")
-    List<Membership> findMembershipByIdAndType(@Param("user_id") UUID id, @Param("membershipType") MembershipType  membershipType);
-    @Query("SELECT m FROM Membership m WHERE m.user.id = :user_id AND m.exp_date >= CURRENT_DATE")
-    List<Membership> findActiveMembershipByUserId(@Param("user_id") UUID user_id);
 }

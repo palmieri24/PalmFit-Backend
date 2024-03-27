@@ -33,7 +33,9 @@ public class User implements UserDetails {
     private String avatar;
     @Enumerated(EnumType.STRING)
     private Role role;
-    @OneToOne(mappedBy = "user")
+    @ManyToOne
+    @JoinColumn(name = "membership_id")
+    @JsonBackReference
     private Membership membership;
 
 

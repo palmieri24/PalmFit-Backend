@@ -10,6 +10,7 @@ public record ProfileDTO(
         String lastname,
         int age,
         String email,
-        String avatar
+        String avatar,
+        Membership membership
 ) {
 }
