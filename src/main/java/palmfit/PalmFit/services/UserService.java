@@ -3,16 +3,17 @@ package palmfit.PalmFit.services;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import palmfit.PalmFit.entities.User;
 import palmfit.PalmFit.exceptions.NotFoundException;
 import palmfit.PalmFit.payloads.exceptions.ProfileDTO;
+import palmfit.PalmFit.payloads.exceptions.ProfileMembershipDTO;
 import palmfit.PalmFit.payloads.exceptions.UserDTO;
 import palmfit.PalmFit.repositories.UserDAO;
 
@@ -47,9 +48,18 @@ public class UserService {
         userDAO.delete(found);
     }
 
+    @Transactional(readOnly = true)
     public ProfileDTO getProfile(User user){
-        ProfileDTO profileDTO = new ProfileDTO(user.getName(), user.getLastname(), user.getAge(), user.getEmail(), user.getAvatar(), user.getMembership());
+        ProfileDTO profileDTO = new ProfileDTO(user.getName(), user.getLastname(), user.getAge(), user.getEmail(), user.getAvatar());
         return profileDTO;
+    }
+    @Transactional(readOnly = true)
+    public ProfileMembershipDTO getProfileMembership(User user){
+        if (user.getMembership() == null){
+            throw new NotFoundException("Not Found!");
+        } else {
+        ProfileMembershipDTO profileMembershipDTO = new ProfileMembershipDTO(user.getMembership().getMembershipType(), user.getMembership().getStart_date(), user.getMembership().getExp_date());
+        return profileMembershipDTO;}
     }
 
     public User findByIdAndUpdate(UUID id, UserDTO body){

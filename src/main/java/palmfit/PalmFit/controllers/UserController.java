@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import palmfit.PalmFit.entities.User;
 import palmfit.PalmFit.exceptions.BadRequestException;
-import palmfit.PalmFit.payloads.exceptions.ProfileDTO;
-import palmfit.PalmFit.payloads.exceptions.UserDTO;
-import palmfit.PalmFit.payloads.exceptions.UserResponseDTO;
+import palmfit.PalmFit.payloads.exceptions.*;
 import palmfit.PalmFit.services.AuthService;
 import palmfit.PalmFit.services.UserService;
 
@@ -38,10 +36,10 @@ public class UserController {
         return userService.getUsers(page, size, orderBy);
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/myProfile")
     @ResponseStatus(HttpStatus.OK)
-    public User findById(@PathVariable UUID userId){
-        return userService.findById(userId);
+    public User findById(@AuthenticationPrincipal User user){
+        return userService.findById(user.getId());
     }
 
     @PostMapping
@@ -74,6 +72,11 @@ public class UserController {
     @GetMapping("/me")
     public ProfileDTO getProfile(@AuthenticationPrincipal User currentUser){
         return userService.getProfile(currentUser);
+    }
+
+    @GetMapping("/myMemb")
+    public ProfileMembershipDTO getProfileMembership(@AuthenticationPrincipal User currentUser){
+        return userService.getProfileMembership(currentUser);
     }
 
     @PutMapping("/updateMe")

@@ -14,11 +14,14 @@ import palmfit.PalmFit.enums.MembershipType;
 import palmfit.PalmFit.exceptions.NotFoundException;
 import palmfit.PalmFit.exceptions.UnauthorizedException;
 import palmfit.PalmFit.payloads.exceptions.MembershipDTO;
+import palmfit.PalmFit.payloads.exceptions.PricingPlanDTO;
 import palmfit.PalmFit.repositories.MembershipDAO;
 import palmfit.PalmFit.repositories.UserDAO;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -50,6 +53,10 @@ public class MembershipService {
         if (user == null){
             throw new UnauthorizedException("User not authenticated!");
         }
+        Optional<Membership> foundM = membershipDAO.findByUsers(user);
+        if (foundM.isPresent()){
+            throw new NotFoundException("You already have a Membership!");
+        } else {
         Membership membership = new Membership();
         membership.setMembershipType(body.membershipType());
         membership.setPrice(mbsPrice(body.membershipType()));
@@ -60,7 +67,7 @@ public class MembershipService {
         membership.getUsers().add(found);
         membershipDAO.save(membership);
         userDAO.save(found);
-        return membership;
+        return membership;}
     }
 
     private LocalDate calculateExp(LocalDate start_date, MembershipType membershipType){
@@ -78,6 +85,7 @@ public class MembershipService {
             case ANNUAL -> 360;
         };
     }
+
     public Membership findByIdAndUpdate( MembershipDTO body, UUID id){
         Membership membership = membershipDAO.findById(id).orElseThrow(()-> new NotFoundException(id));
         membership.setMembershipType(body.membershipType());
