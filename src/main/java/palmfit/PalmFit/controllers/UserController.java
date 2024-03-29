@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +20,6 @@ import palmfit.PalmFit.services.AuthService;
 import palmfit.PalmFit.services.UserService;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -79,7 +77,7 @@ public class UserController {
 
     @PutMapping("/updateMe")
     public User updateProfile(@AuthenticationPrincipal User currentUser, @RequestBody UserUpdateInfoDTO updatedUser){
-        return this.authService.update(currentUser.getId(), updatedUser);
+        return this.authService.update(currentUser.getId(), updatedUser);}
 
     @GetMapping("/myMemb")
     public ProfileMembershipDTO getProfileMembership(@AuthenticationPrincipal User currentUser){
