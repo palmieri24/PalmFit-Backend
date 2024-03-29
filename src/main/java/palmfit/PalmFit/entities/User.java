@@ -1,5 +1,6 @@
 package palmfit.PalmFit.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -32,16 +33,10 @@ public class User implements UserDetails {
     private String avatar;
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    public User(String name, String lastname, int age, String email, String password, String avatar, Role role) {
-        this.name = name;
-        this.lastname = lastname;
-        this.age = age;
-        this.email = email;
-        this.password = password;
-        this.avatar = avatar;
-        this.role = role;
-    }
+    @ManyToOne
+    @JoinColumn(name = "membership_id")
+    @JsonBackReference
+    private Membership membership;
 
 
     @Override
@@ -56,21 +51,21 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }
