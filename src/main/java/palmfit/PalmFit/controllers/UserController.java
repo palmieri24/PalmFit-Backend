@@ -16,6 +16,7 @@ import palmfit.PalmFit.payloads.exceptions.ProfileDTO;
 import palmfit.PalmFit.payloads.exceptions.UserDTO;
 import palmfit.PalmFit.payloads.exceptions.UserResponseDTO;
 import palmfit.PalmFit.payloads.exceptions.UserUpdateInfoDTO;
+import palmfit.PalmFit.payloads.exceptions.*;
 import palmfit.PalmFit.services.AuthService;
 import palmfit.PalmFit.services.UserService;
 
@@ -40,10 +41,10 @@ public class UserController {
         return userService.getUsers(page, size, orderBy);
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/myProfile")
     @ResponseStatus(HttpStatus.OK)
-    public User findById(@PathVariable UUID userId){
-        return userService.findById(userId);
+    public User findById(@AuthenticationPrincipal User user){
+        return userService.findById(user.getId());
     }
 
     @PostMapping
@@ -79,7 +80,12 @@ public class UserController {
     @PutMapping("/updateMe")
     public User updateProfile(@AuthenticationPrincipal User currentUser, @RequestBody UserUpdateInfoDTO updatedUser){
         return this.authService.update(currentUser.getId(), updatedUser);
+
+    @GetMapping("/myMemb")
+    public ProfileMembershipDTO getProfileMembership(@AuthenticationPrincipal User currentUser){
+        return userService.getProfileMembership(currentUser);
     }
+
 
     @DeleteMapping("/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -87,7 +93,7 @@ public class UserController {
         this.userService.findByIdAndDelete(currentUser.getId());
     }
 
-    @PostMapping("/{id}/upload")
+    @PostMapping("/uploadAvatar")
     public String uploadAvatar(@PathVariable UUID id, @RequestParam("avatar") MultipartFile img) throws IOException {
         return this.userService.uploadImg(img, id);
     }

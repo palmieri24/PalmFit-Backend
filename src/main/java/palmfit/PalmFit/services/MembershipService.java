@@ -1,36 +1,32 @@
 package palmfit.PalmFit.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import palmfit.PalmFit.entities.Membership;
 import palmfit.PalmFit.entities.User;
 import palmfit.PalmFit.enums.MembershipType;
 import palmfit.PalmFit.exceptions.NotFoundException;
+import palmfit.PalmFit.exceptions.UnauthorizedException;
 import palmfit.PalmFit.payloads.exceptions.MembershipDTO;
 import palmfit.PalmFit.repositories.MembershipDAO;
 import palmfit.PalmFit.repositories.UserDAO;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class MembershipService {
     @Autowired
     private MembershipDAO membershipDAO;
+    @Autowired
     private UserService userService;
     @Autowired
     private UserDAO userDAO;
-
-    public MembershipService(@Lazy UserService userService){
-        this.userService = userService;
-    }
 
     public Page<Membership> getMemberships(int page, int size, String orderBy){
         if (size >= 100) size = 100;
@@ -47,16 +43,26 @@ public class MembershipService {
         membershipDAO.delete(found);
     }
 
-    public Membership save(MembershipDTO body){
+    public Membership save(MembershipDTO body, User user){
+        System.out.println(body);
+        if (user == null){
+            throw new UnauthorizedException("User not authenticated!");
+        }
+        Optional<Membership> foundM = membershipDAO.findByUsers(user);
+        if (foundM.isPresent()){
+            throw new NotFoundException("You already have a Membership!");
+        } else {
         Membership membership = new Membership();
         membership.setMembershipType(body.membershipType());
         membership.setPrice(mbsPrice(body.membershipType()));
-        membership.setDescription(body.description());
         membership.setStart_date(LocalDate.now());
         membership.setExp_date(calculateExp(membership.getStart_date(), membership.getMembershipType()));
-        User user = userDAO.findById(body.user_id()).orElseThrow(()-> new NotFoundException("User not found!"));
-        membership.setUser(user);
-        return membershipDAO.save(membership);
+        User found = userService.findById(user.getId());
+        found.setMembership(membership);
+        membership.getUsers().add(found);
+        membershipDAO.save(membership);
+        userDAO.save(found);
+        return membership;}
     }
 
     private LocalDate calculateExp(LocalDate start_date, MembershipType membershipType){
@@ -75,19 +81,13 @@ public class MembershipService {
         };
     }
 
-    public Membership findByIdAndUpdate(UUID id, MembershipDTO body){
-        Membership found = this.findById(id);
-        found.setMembershipType(body.membershipType());
-        found.setPrice(mbsPrice(body.membershipType()));
-        found.setDescription(body.description());
-        found.setStart_date(LocalDate.now());
-        found.setExp_date(calculateExp(found.getStart_date(), found.getMembershipType()));
-        User user = userDAO.findById(body.user_id()).orElseThrow(()-> new NotFoundException("User id not found!"));
-        found.setUser(user);
-        return membershipDAO.save(found);
+    public Membership findByIdAndUpdate( MembershipDTO body, UUID id){
+        Membership membership = membershipDAO.findById(id).orElseThrow(()-> new NotFoundException(id));
+        membership.setMembershipType(body.membershipType());
+        membership.setPrice(mbsPrice(body.membershipType()));
+        membership.setStart_date(LocalDate.now());
+        membership.setExp_date(calculateExp(membership.getStart_date(), membership.getMembershipType()));
+        return membershipDAO.save(membership);
     }
 
-    public List<Membership> findMembershipByIdAndType(UUID id, MembershipType membershipType){
-        return membershipDAO.findMembershipByIdAndType(id, membershipType);
-    }
 }

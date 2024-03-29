@@ -2,14 +2,14 @@ package palmfit.PalmFit.payloads.exceptions;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import palmfit.PalmFit.entities.User;
 import palmfit.PalmFit.enums.MembershipType;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
-public record MembershipDTO(
+public record ProfileMembershipDTO(
         @Enumerated(EnumType.STRING)
-        MembershipType membershipType
+        MembershipType membershipType,
+        LocalDate start_date,
+        LocalDate exp_date
 ) {
 }

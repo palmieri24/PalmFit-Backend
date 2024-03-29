@@ -3,12 +3,16 @@ package palmfit.PalmFit.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import palmfit.PalmFit.entities.Membership;
+import palmfit.PalmFit.entities.User;
 import palmfit.PalmFit.exceptions.BadRequestException;
+import palmfit.PalmFit.exceptions.UnauthorizedException;
 import palmfit.PalmFit.payloads.exceptions.MembershipDTO;
 import palmfit.PalmFit.payloads.exceptions.MembershipResponseDTO;
 import palmfit.PalmFit.services.MembershipService;
@@ -35,23 +39,18 @@ public class MembershipController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public MembershipResponseDTO save(@RequestBody @Validated MembershipDTO body, BindingResult validation){
-    if(validation.hasErrors()){
-      System.out.println(validation.getAllErrors());
-      throw new BadRequestException("Payload Error!");
-  } else {
-      Membership membership = membershipService.save(body);
-      return new MembershipResponseDTO(membership.getId());
+  public Membership save(@AuthenticationPrincipal User currentUser, @RequestBody MembershipDTO body){
+    if (currentUser == null){
+      throw new UnauthorizedException("User not Authenticated!");
     }
+      return membershipService.save(body, currentUser);
 }
-  @PutMapping("/{id}")
-  @PreAuthorize("hasAuthority('ADMIN')")
-  public MembershipResponseDTO findByIdAndUpdate(@PathVariable UUID id,@RequestBody @Validated MembershipDTO body, BindingResult validation){
-    if(validation.hasErrors()){
-      throw new BadRequestException("Errori di validazione");
+  @PutMapping("/renewMe")
+  public Membership findByIdAndUpdate(@AuthenticationPrincipal User currentUser, @RequestBody MembershipDTO body){
+    if (currentUser == null){
+      throw new UnauthorizedException("User not Authenticated!");
     }
-    Membership membership = membershipService.findByIdAndUpdate(id, body);
-    return new MembershipResponseDTO(membership.getId());
+    return membershipService.findByIdAndUpdate(body, currentUser.getId());
   }
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
