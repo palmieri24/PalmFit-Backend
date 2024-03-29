@@ -39,3 +39,5 @@ La sicurezza degli utenti è una priorità assoluta!
 ## 📞 Contatti
 
 Per qualsiasi domanda o suggerimento, non esitare a contattarmi!
+
+##🏝️ Front-End side -> https://github.com/palmieri24/PalmFit.git
